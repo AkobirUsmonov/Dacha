@@ -1,19 +1,27 @@
 from pathlib import Path
+import environ
+from coreschema.encodings.html import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+anv = environ.Env()
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-olln0%pwp3_4f)ss2&$rl+ck1%^kffnz_-i1hlg^c)+f##z705'
+from dotenv import dotenv_values
+
+# Load environment variables from .env file
+env_vars = dotenv_values(".env")
+
+# Access the SECRET_KEY from loaded environment variables
+SECRET_KEY = env_vars.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -75,17 +83,28 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
+import os, dj_database_url
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+import dj_database_url
+from dotenv import dotenv_values
+
+# Load environment variables from .env file
+env_vars = dotenv_values(".env")
+
+# Access the DATABASE_URL from loaded environment variables
+database_url = env_vars.get('DATABASE_URL')
+
+# Parse the DATABASE_URL
+default_db_config = dj_database_url.parse(database_url)
+
+# Database settings
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': default_db_config
 }
+
 
 
 # Password validation
@@ -123,7 +142,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
